@@ -66,10 +66,21 @@ function calculate() {
         for (var bit = subnetMask; bit < ipBin.length; bit++) {
             // insure all subnet bits == 0
             if (ipBin[bit] == "1") {
-                return [false, subnetField, "Provide Valid subnet range and subnet mask"];
+                return [false, subnetField, "Provide valid subnet range and subnet mask"];
             }
         }
         return [true, subnetField, ""];
+    }
+
+    // validate requested subnet count
+    function validateSubnetCount(ipBin, subnetMask, subnetCount) {
+        if ((2 ** (ipBin.length - subnetMask) / 4) >= subnetCount) {                // determine max subnets
+            return [true, subnetCountField, ""];
+        } else if (subnetCount < 0) {                                               // insure positive subnet  count
+            return [false, subnetCountField, "Enter non-negative subnet count"];
+        } else {                                                                    // return true if validated
+            return [false, subnetCountField, ""];
+        }
     }
 
     // get binary string ipv4/ipv6 address
@@ -156,21 +167,30 @@ function calculate() {
         var subnetCount = subnetCountField.value;
         var validateIP = validateAddressFormat(ip, ipVersion);
 
-        if (validateIP[0]) {                                        // validate IP address
-            var ipBin = getBinary(ip, ipVersion);                   // get binary IP
+        if (validateIP[0]) {                                                            // validate IP address
+            var ipBin = getBinary(ip, ipVersion);                                       // get binary IP
             var validateSN = validateSNMask(ipBin, subnetMask);
-            inputMessage(validateIP);                               // validation response
-            console.log("binary: " + ipBin);
-            if (validateSN[0]) {                                    // validate subnet mask
+            inputMessage(validateIP);                                                   // validation response
+            //console.log("binary: " + ipBin);
+            if (validateSN[0]) {                                                        // validate subnet mask
                 inputMessage(validateSN);
-                console.log("valid ip and subnet!");
-            } else {
+                //console.log("valid ip and subnet!");
+                var validateSNC = validateSubnetCount(ipBin, subnetMask, subnetCount);  // validate requested subnet count
+                if (validateSNC[0]) {
+                    console.log("valid subnet count!")
+                    inputMessage(validateSNC);
+                } else {
+                    console.log("invalid sn count!");
+                    inputMessage(validateSNC);
+                }
+
+            } else {                                                                    // invalid subnet mask
                 inputMessage(validateSN);
-                console.log(validateSN);
+                //console.log(validateSN);
             }
-        } else {
+        } else {                                                                        // invalid IP address
             // ip error condition
-            console.log(validateIP);
+            //console.log(validateIP);
             inputMessage(validateIP);
         }
     });
