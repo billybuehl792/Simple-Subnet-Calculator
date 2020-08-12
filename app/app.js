@@ -19,74 +19,101 @@ function calculate() {
         }
     }
 
-    // validate IP address format
-    function validateAddressFormat(ip, ipVersion) {
-        
-        function v4Validate(ip) {
-            // validate ipv4 address format (0-255.0-255.0-255.0-255)
-            ipAddr = ip.split(".");
-            if (ipAddr.length != 4) {                                               // 4 fields separated by "."
-                return [false, ipField, "Enter correct ip format: X.X.X.X"];
-            }
-            for (item in ipAddr) {
-                if (isNaN(ipAddr[item])) {                                          // insure numeric values
-                    return [false, ipField, "Enter numbers"];
-                }
-                if (parseInt(ipAddr[item]) < 0 || parseInt(ipAddr[item]) > 255) {   // insure values within range
-                    return [false, ipField, "Enter correct IP address values"];
-                }
-            }
-            return [true, ipField, ""];    
-        }
+    // validate user input
+    function validate(ip, ipBin, ipVersion, subnetMask, subnetCount) {
 
-        function v6Validate(ip) {
-            // Regex from: https://community.helpsystems.com/forums/intermapper/miscellaneous-topics/5acc4fcf-fa83-e511-80cf-0050568460e4
-            var v6Regex = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/i;
-            if (ip.match(v6Regex)) {
-                return [true, ipField, ""];
-            } else {
-                return [false, ipField, "Enter correct IPv6 Format: X:X:X:X:X:X:X:X"];
-            }
+        // validate IP address format
+        function validateAddressFormat(ip, ipVersion) {
             
+            function v4Validate(ip) {
+                // validate ipv4 address format (0-255.0-255.0-255.0-255)
+                ipAddr = ip.split(".");
+                if (ipAddr.length != 4) {                                               // 4 fields separated by "."
+                    return [false, ipField, "Enter correct ip format: X.X.X.X"];
+                }
+                for (item in ipAddr) {
+                    if (isNaN(ipAddr[item])) {                                          // insure numeric values
+                        return [false, ipField, "Enter numbers"];
+                    }
+                    if (parseInt(ipAddr[item]) < 0 || parseInt(ipAddr[item]) > 255) {   // insure values within range
+                        return [false, ipField, "Enter correct IP address values"];
+                    }
+                }
+                return [true, ipField, ""];    
+            }
+
+            function v6Validate(ip) {
+                // Regex from: https://community.helpsystems.com/forums/intermapper/miscellaneous-topics/5acc4fcf-fa83-e511-80cf-0050568460e4
+                var v6Regex = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/i;
+                if (ip.match(v6Regex)) {
+                    return [true, ipField, ""];
+                } else {
+                    return [false, ipField, "Enter correct IPv6 Format: X:X:X:X:X:X:X:X"];
+                }
+                
+            }
+
+            if (ipVersion == "ipv4") {
+                return v4Validate(ip);
+            } else if (ipVersion == "ipv6") {
+                return v6Validate(ip);
+            }
         }
 
-        if (ipVersion == "ipv4") {
-            return v4Validate(ip);
-        } else if (ipVersion == "ipv6") {
-            return v6Validate(ip);
+        // validate SN mask against IP address
+        function validateSNMask(ipBin, subnetMask, ipVersion) {
+            if (ipVersion == "ipv6") {                                                      // IPv6 subnet validation
+                if (subnetMask < 0 || subnetMask > 64) {
+                    return [false, subnetField, "Minimum IPv6 subnet size: /64"];
+                }
+            } else {
+                if (subnetMask < 0 || subnetMask > 30) {                                    // IPv4 validation
+                    return [false, subnetField, "Minimum IPv4 subnet size: /30"];
+                }
+            }
+            for (var bit = subnetMask; bit < ipBin.length; bit++) {                         // insure all subnet bits == 0
+                if (ipBin[bit] == "1") {
+                    return [false, subnetField, "Provide valid subnet range/ mask"];
+                }
+            }
+            return [true, subnetField, ""];
         }
-    }
 
-    // validate SN mask against IP address
-    function validateSNMask(ipBin, subnetMask, ipVersion) {
-        if (ipVersion == "ipv6") {                                                      // IPv6 subnet validation
-            if (subnetMask < 0 || subnetMask > 64) {
-                return [false, subnetField, "Minimum IPv6 subnet size: /64"];
+        // validate requested subnet count
+        function validateSubnetCount(ipBin, subnetMask, subnetCount) {
+            var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
+            if ( maxSubnets >= subnetCount) {
+                return [true, subnetCountField, ""];
+            } else if (subnetCount < 0) {                                               // insure positive subnet  count
+                return [false, subnetCountField, "Enter non-negative subnet count"];
+            } else {
+                var returnString = "Maximum subnets in /" + subnetMask + " network: " + maxSubnets;
+                return [false, subnetCountField, returnString];
+            }
+        }
+
+        var validateIP = validateAddressFormat(ip, ipVersion);
+        var validateSN = validateSNMask(ipBin, subnetMask, ipVersion);
+        var validateSNC = validateSubnetCount(ipBin, subnetMask, subnetCount);
+
+        if (validateIP[0]) {                                                            // validate IP address
+            inputMessage(validateIP);
+            if (validateSN[0]) {                                                        // validate subnet mask
+                inputMessage(validateSN);
+                if (validateSNC[0]) {
+                    inputMessage(validateSNC);
+                    return true;
+                } else {
+                    inputMessage(validateSNC);
+                }
+            } else {
+                inputMessage(validateSN);
             }
         } else {
-            if (subnetMask < 0 || subnetMask > 30) {                                    // IPv4 validation
-                return [false, subnetField, "Minimum IPv4 subnet size: /30"];
-            }
+            inputMessage(validateIP);
         }
-        for (var bit = subnetMask; bit < ipBin.length; bit++) {                         // insure all subnet bits == 0
-            if (ipBin[bit] == "1") {
-                return [false, subnetField, "Provide valid subnet range/ mask"];
-            }
-        }
-        return [true, subnetField, ""];
-    }
 
-    // validate requested subnet count
-    function validateSubnetCount(ipBin, subnetMask, subnetCount) {
-        var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
-        if ( maxSubnets >= subnetCount) {
-            return [true, subnetCountField, ""];
-        } else if (subnetCount < 0) {                                               // insure positive subnet  count
-            return [false, subnetCountField, "Enter non-negative subnet count"];
-        } else {
-            var returnString = "Maximum subnets in /" + subnetMask + " network: " + maxSubnets;
-            return [false, subnetCountField, returnString];
-        }
+        return false;
     }
 
     // get binary string ipv4/ipv6 address
@@ -171,26 +198,14 @@ function calculate() {
         var ipVersion = getVersion(versionFields);
         var subnetMask = subnetField.value;
         var subnetCount = subnetCountField.value;
-        var validateIP = validateAddressFormat(ip, ipVersion);
-
-        if (validateIP[0]) {                                                            // validate IP address
-            var ipBin = getBinary(ip, ipVersion);                                       // get binary IP
-            var validateSN = validateSNMask(ipBin, subnetMask, ipVersion);
-            inputMessage(validateIP);                                                   // validation HTML response
-            if (validateSN[0]) {                                                        // validate subnet mask
-                inputMessage(validateSN);
-                var validateSNC = validateSubnetCount(ipBin, subnetMask, subnetCount);  // validate requested subnet count
-                if (validateSNC[0]) {
-                    inputMessage(validateSNC);
-                } else {
-                    inputMessage(validateSNC);
-                }
-            } else {                                                                    // invalid subnet mask
-                inputMessage(validateSN);
-            }
-        } else {                                                                        // invalid IP address
-            inputMessage(validateIP);
+        var ipBin = getBinary(ip, ipVersion);
+        
+        if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
+            console.log("valid!");
+        } else {
+            console.log("invalid");
         }
+
     });
 
     // select IPv4
