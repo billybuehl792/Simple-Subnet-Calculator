@@ -29,7 +29,7 @@ function calculate() {
                 return [false, ipField, "Enter correct ip format: X.X.X.X"];
             }
             for (item in ipAddr) {
-                if (isNaN(parseInt(ipAddr[item]))) {                                // insure numeric values
+                if (isNaN(ipAddr[item])) {                                          // insure numeric values
                     return [false, ipField, "Enter numbers"];
                 }
                 if (parseInt(ipAddr[item]) < 0 || parseInt(ipAddr[item]) > 255) {   // insure values within range
@@ -78,12 +78,14 @@ function calculate() {
 
     // validate requested subnet count
     function validateSubnetCount(ipBin, subnetMask, subnetCount) {
-        if ((2 ** (ipBin.length - subnetMask) / 4) >= subnetCount) {                // determine max subnets
+        var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
+        if ( maxSubnets >= subnetCount) {
             return [true, subnetCountField, ""];
         } else if (subnetCount < 0) {                                               // insure positive subnet  count
             return [false, subnetCountField, "Enter non-negative subnet count"];
-        } else {                                                                    // return true if validated
-            return [false, subnetCountField, ""];
+        } else {
+            var returnString = "Maximum subnets in /" + subnetMask + " network: " + maxSubnets;
+            return [false, subnetCountField, returnString];
         }
     }
 
@@ -174,27 +176,19 @@ function calculate() {
         if (validateIP[0]) {                                                            // validate IP address
             var ipBin = getBinary(ip, ipVersion);                                       // get binary IP
             var validateSN = validateSNMask(ipBin, subnetMask, ipVersion);
-            inputMessage(validateIP);                                                   // validation response
-            //console.log("binary: " + ipBin);
+            inputMessage(validateIP);                                                   // validation HTML response
             if (validateSN[0]) {                                                        // validate subnet mask
                 inputMessage(validateSN);
-                //console.log("valid ip and subnet!");
                 var validateSNC = validateSubnetCount(ipBin, subnetMask, subnetCount);  // validate requested subnet count
                 if (validateSNC[0]) {
-                    console.log("valid subnet count!")
                     inputMessage(validateSNC);
                 } else {
-                    console.log("invalid sn count!");
                     inputMessage(validateSNC);
                 }
-
             } else {                                                                    // invalid subnet mask
                 inputMessage(validateSN);
-                //console.log(validateSN);
             }
         } else {                                                                        // invalid IP address
-            // ip error condition
-            //console.log(validateIP);
             inputMessage(validateIP);
         }
     });
@@ -204,8 +198,9 @@ function calculate() {
         // ipv4 version selected
         ipLabel.innerHTML = "IPv4 Address";             // change text to "ipv4 address"
         ipField.style.width = "110px";                  // shrink ip input width
-        ipField.value = "";                             // clear ipField
-        subnetField.value = "";                         // clear subnetField
+        ipField.value = "0.0.0.0";                      // clear ipField
+        subnetField.value = "0";                        // clear subnetField
+        subnetField.max = "32";                         // set maximum input value
         snLabel.style.marginLeft = "40px";              // shrink label position
     });
 
@@ -214,8 +209,9 @@ function calculate() {
         // ipv6 version selected
         ipLabel.innerHTML = "IPv6 Address";             // change text to ipv6 address
         ipField.style.width = "250px";                  // extend ip input width
-        ipField.value = "";                             // clear ipField
-        subnetField.value = "";                         // clear subnet field
+        ipField.value = "::";                           // clear ipField
+        subnetField.value = "64";                       // clear subnet field
+        subnetField.max = "64";                         // set maximum input value
         snLabel.style.marginLeft = "180px";             // extend label position
     });
 }
