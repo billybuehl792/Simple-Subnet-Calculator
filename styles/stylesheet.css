@@ -1,0 +1,75 @@
+body {
+    background-color: rgb(32, 33, 35);
+    color: rgb(251, 254, 253);
+    font-family: 'Roboto Mono', monospace;
+}
+.title-container {
+    background-color: rgb(16, 117, 90);
+    width: 100%;
+    line-height: 50px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+.container {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.input-container {
+    max-width: 450px;
+    width: 80%;
+    min-width: 340px;
+    margin: 6px;
+    font-size: 12px;
+}
+.input-field {
+    margin-top: 5px;
+    padding-left: 5px;
+    height: 25px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 5px;
+    border-style: none;
+    font-family: 'Roboto Mono', monospace;
+}
+.input-field:focus {
+    outline: none;
+    color: white;
+    background-color: rgb(60, 60, 60);
+}
+#subnet-mask {
+    width: 40px;
+}
+fieldset {
+    display: block;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-top: 0.35em;
+    padding-bottom: 0.625em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    border: 1px groove #efefef;
+    border-radius: 10px;
+}
+legend {
+    font-size: 13px;
+}
+label {
+    font-size: 10px;
+}
+#calculate {
+    width: 100px;
+    line-height: 30px;
+    text-align: center;
+    background-color: grey;
+    cursor: pointer;
+}
+#error-field {
+    font-size: 8px;
+    color: rgb(218, 121, 121);
+}
+.error {
+    background-color: rgb(218, 121, 121);
+}

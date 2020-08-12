@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IP Subnet Calculator</title>
+<link rel="icon" href="static/img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="styles/resetStylesheet.css">
+<link rel="stylesheet" type="text/css" href="styles/stylesheet.css">
+</head>
+
+<body>
+    <div class="title-container">
+        <h1 class="title">Simple IPv4/ IPv6 Subnet Calculator</h1>
+    </div>
+    <form name="calculator" id="calculator">
+        <div class="container">
+            <div class="input-container">
+                <fieldset>
+                    <legend>IP Version</legend>
+                    <input type="radio" id="IPv4" name="ip-version" value="ipv4" checked="checked">
+                    <label for="IPv4">IPv4</label><br>
+                    <input type="radio" id="IPv6" name="ip-version" value="ipv6">
+                    <label for="IPv6">IPv6</label>
+                </fieldset>
+            </div>
+
+            <div class="input-container">
+                <fieldset>
+                    <legend>IP Information</legend>
+                    <label for="ip-address" id="ip-label">IPv4 Address</label>
+                    <label for="subnet-mask" id="sn-label" style="margin-left: 40px;">SN Mask</label><br>
+                    <input name="ip-address" id="ip-address" class="input-field" style="width: 110px;">
+                    <input name="subnet-mask" id="subnet-mask" class="input-field" type="number" min="0"><br>
+                    <small id="error-field"></small>
+                </fieldset>
+            </div>
+
+            <div class="input-container">
+                <label for="subnet-count">Number of subnets</label>
+                <input name="subnet-count" id="subnet-count">
+            </div>
+
+            <div id="calculate">Calculate</div>
+        </div>
+    </form>
+
+    <script type='text/javascript' src='app/app.js'></script>
+    <script>
+        app();
+    </script>
+</body>
+
+</html>
