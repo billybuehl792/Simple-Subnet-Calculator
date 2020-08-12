@@ -58,15 +58,19 @@ function calculate() {
     }
 
     // validate SN mask against IP address
-    function validateSNMask(ipBin, subnetMask) {
-        // insure valid IP and subnet mask
-        if (subnetMask < 0 || subnetMask > ipBin.length) {
-            return [false, subnetField, "Enter valid subnet mask"];
+    function validateSNMask(ipBin, subnetMask, ipVersion) {
+        if (ipVersion == "ipv6") {                                                      // IPv6 subnet validation
+            if (subnetMask < 0 || subnetMask > 64) {
+                return [false, subnetField, "Minimum IPv6 subnet size: /64"];
+            }
+        } else {
+            if (subnetMask < 0 || subnetMask > 30) {                                    // IPv4 validation
+                return [false, subnetField, "Minimum IPv4 subnet size: /30"];
+            }
         }
-        for (var bit = subnetMask; bit < ipBin.length; bit++) {
-            // insure all subnet bits == 0
+        for (var bit = subnetMask; bit < ipBin.length; bit++) {                         // insure all subnet bits == 0
             if (ipBin[bit] == "1") {
-                return [false, subnetField, "Provide valid subnet range and subnet mask"];
+                return [false, subnetField, "Provide valid subnet range/ mask"];
             }
         }
         return [true, subnetField, ""];
@@ -169,7 +173,7 @@ function calculate() {
 
         if (validateIP[0]) {                                                            // validate IP address
             var ipBin = getBinary(ip, ipVersion);                                       // get binary IP
-            var validateSN = validateSNMask(ipBin, subnetMask);
+            var validateSN = validateSNMask(ipBin, subnetMask, ipVersion);
             inputMessage(validateIP);                                                   // validation response
             //console.log("binary: " + ipBin);
             if (validateSN[0]) {                                                        // validate subnet mask
