@@ -117,7 +117,7 @@ function calculate() {
 
     // returns binary string ipv4/ipv6 address
     function getBinary(ip, ipVersion) {
-
+        // retrieve ipv4 binary string
         function v4Binary(ip) {
             var ipBin = "";
 
@@ -135,7 +135,7 @@ function calculate() {
 
             return ipBin;
         }
-
+        // retrieve ipv6 binary string
         function v6Binary(ip) {
             var ipBin = "";
             // create array of hexadecimal strings
@@ -208,9 +208,17 @@ function calculate() {
         }
     }
 
-    function getIP(binaryString, ipVersion) {
-        // convert to binary from decimal
-        //console.log(parseInt(ipaddr[0]).toString(2))
+    // returns array of formatted IPv4/ IPv6 addresses
+    function getIP(subnet, ipVersion) {
+        if (ipVersion == "ipv4") {
+            var addrList = [subnet.slice(0, 8), subnet.slice(8, 16), subnet.slice(16, 24), subnet.slice(24, 32)];
+
+            for (x = 0; x < addrList.length; x++) {
+                ipAddr[x] = parseInt(addrList[x], 2);
+            }
+
+            return ipAddr.join(".");
+        }
     }
 
     // embed HTML response to user input
@@ -232,9 +240,12 @@ function calculate() {
         var ipBin = getBinary(ip, ipVersion);
         
         if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
-            console.log("valid!");
-            subnets = getSubnets(ipBin, subnetMask, subnetCount);
-            console.log(subnets);
+            var subnets = getSubnets(ipBin, subnetMask, subnetCount);                                   // retrieve binary subnets
+            var ipList = [];
+            for (i = 0; i < subnets.length; i++) {                                                      // create list of {ip, mask}
+                ipList.push({"ip": getIP(subnets[i]["ip"], ipVersion), "mask": subnets[i]["mask"]});
+            }
+            console.log(ipList);
         } else {
             console.log("invalid");
         }
