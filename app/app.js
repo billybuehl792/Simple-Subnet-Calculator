@@ -9,7 +9,7 @@ function calculate() {
     var subnetCountField = document.getElementById("subnet-count");
     var errorField = document.getElementById("error-field");
 
-    // get selected IP version
+    // returns selected IP version
     function getVersion(versionFields) {
         // return version of checked radio button
         for (v in versionFields) {
@@ -87,8 +87,7 @@ function calculate() {
             } else if (subnetCount < 0) {                                               // insure positive subnet  count
                 return [false, subnetCountField, "Enter non-negative subnet count"];
             } else {
-                var returnString = "Maximum subnets in /" + subnetMask + " network: " + maxSubnets;
-                return [false, subnetCountField, returnString];
+                return [false, subnetCountField, "Maximum subnets in /" + subnetMask + " network: " + maxSubnets];
             }
         }
 
@@ -116,7 +115,7 @@ function calculate() {
         return false;
     }
 
-    // get binary string ipv4/ipv6 address
+    // returns binary string ipv4/ipv6 address
     function getBinary(ip, ipVersion) {
 
         function v4Binary(ip) {
@@ -177,6 +176,38 @@ function calculate() {
         }
     }
 
+    // returns array of subnet info arrays
+    function getSubnets(ipBin, subnetMask, subnetCount) {
+        // returns array of 2 subnets: [{"ip": "binary", "mask": snmask}, {"ip": "binary", "mask": snmask}]
+        function splitBit(subnet) {
+            // split ipBin string at subnet mask+1
+            var ipBin1 = subnet["ip"].slice(0, subnet["mask"]) + "0" + subnet["ip"].slice(subnet["mask"] + 1, subnet["ip"].length);
+            var ipBin2 = subnet["ip"].slice(0, subnet["mask"]) + "1" + subnet["ip"].slice(subnet["mask"] + 1, subnet["ip"].length);
+            var mask = subnet["mask"] + 1;
+
+            return [{"ip": ipBin1, "mask": mask}, {"ip": ipBin2, "mask": mask}];
+        }
+
+        var subnets = [{"ip": ipBin, "mask": Number(subnetMask)}];
+        var maxLength = 2;
+        var iterator = 0;
+        var splitSN;
+
+        // divide until subnetCount reached
+        while (subnets.length < subnetCount) {
+            splitSN = splitBit(subnets[iterator]);                      // get list of split ips
+            subnets.splice(iterator, 1, splitSN[0], splitSN[1]);        // replace ip with 2 split ips (ex. /24 -> /25, /25)
+            iterator += 2;                                              // split NEXT ip in list
+            if (subnets.length == subnetCount) {                        // desired subnet count
+                return subnets;                                         // return subnet list
+            }
+            if (subnets.length == maxLength) {                          // iterated through list
+                maxLength = maxLength * 2;                              // double maxLength for subnet division
+                iterator = 0;                                           // reset iterator
+            }
+        }
+    }
+
     function getIP(binaryString, ipVersion) {
         // convert to binary from decimal
         //console.log(parseInt(ipaddr[0]).toString(2))
@@ -202,10 +233,11 @@ function calculate() {
         
         if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
             console.log("valid!");
+            subnets = getSubnets(ipBin, subnetMask, subnetCount);
+            console.log(subnets);
         } else {
             console.log("invalid");
         }
-
     });
 
     // select IPv4
