@@ -82,10 +82,10 @@ function calculate() {
         // validate requested subnet count
         function validateSubnetCount(ipBin, subnetMask, subnetCount) {
             var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
-            if ( maxSubnets >= subnetCount) {
+            if (subnetCount > 1000) {
+                return [false, subnetCountField, "C'mon, man. That's too many subnets.."];
+            } else if (maxSubnets >= subnetCount && subnetCount >= 2) {
                 return [true, subnetCountField, ""];
-            } else if (subnetCount < 0) {                                               // insure positive subnet  count
-                return [false, subnetCountField, "Enter non-negative subnet count"];
             } else {
                 return [false, subnetCountField, "Maximum subnets in /" + subnetMask + " network: " + maxSubnets];
             }
@@ -181,17 +181,30 @@ function calculate() {
         // returns array of 2 subnets: [{"ip": "binary", "mask": snmask}, {"ip": "binary", "mask": snmask}]
         function splitBit(subnet) {
             // split ipBin string at subnet mask+1
-            var ipBin1 = subnet["ip"].slice(0, subnet["mask"]) + "0" + subnet["ip"].slice(subnet["mask"] + 1, subnet["ip"].length);
-            var ipBin2 = subnet["ip"].slice(0, subnet["mask"]) + "1" + subnet["ip"].slice(subnet["mask"] + 1, subnet["ip"].length);
-            var mask = subnet["mask"] + 1;
+            var mask = subnet["mask"] + 1;            
+            var ipBin1 = subnet["ip"].slice(0, subnet["mask"]) + "0" + subnet["ip"].slice(mask, subnet["ip"].length);
+            var ipBin2 = subnet["ip"].slice(0, subnet["mask"]) + "1" + subnet["ip"].slice(mask, subnet["ip"].length);
 
             return [{"ip": ipBin1, "mask": mask}, {"ip": ipBin2, "mask": mask}];
+        }
+
+        // returns network ip address
+        function getNetworkAddr(ip) {
+            return ip
+        }
+
+        // returns broadcast address
+        function getBroadcastAddr(ip, subnetMask) {
+            return ip.slice(0, subnetMask) + "1".repeat(ip.length - subnetMask);    // all 1s
         }
 
         var subnets = [{"ip": ipBin, "mask": Number(subnetMask)}];
         var maxLength = 2;
         var iterator = 0;
         var splitSN;
+        var networkAddr;
+        var bcast;
+        var hostNum;
 
         // divide until subnetCount reached
         while (subnets.length < subnetCount) {
@@ -199,26 +212,46 @@ function calculate() {
             subnets.splice(iterator, 1, splitSN[0], splitSN[1]);        // replace ip with 2 split ips (ex. /24 -> /25, /25)
             iterator += 2;                                              // split NEXT ip in list
             if (subnets.length == subnetCount) {                        // desired subnet count
-                return subnets;                                         // return subnet list
+                break;                                                  // break from loop
             }
             if (subnets.length == maxLength) {                          // iterated through list
                 maxLength = maxLength * 2;                              // double maxLength for subnet division
                 iterator = 0;                                           // reset iterator
             }
         }
+
+        for (i = 0; i < subnets.length; i++) {
+            networkAddr = getNetworkAddr(subnets[i]["ip"]);
+            bcast = getBroadcastAddr(subnets[i]["ip"], subnets[i]["mask"]);
+            hostNum = 2 ** (subnets[i]["ip"].length - subnets[i]["mask"]) - 2;
+            subnets[i] = {"ip": subnets[i]["ip"], "mask": subnets[i]["mask"], "network": networkAddr, "bcast": bcast, "hosts": hostNum};       
+        }
+        return subnets;
     }
 
     // returns array of formatted IPv4/ IPv6 addresses
     function getIP(subnet, ipVersion) {
+        var addrList = [];
         if (ipVersion == "ipv4") {
-            var addrList = [subnet.slice(0, 8), subnet.slice(8, 16), subnet.slice(16, 24), subnet.slice(24, 32)];
-
-            for (x = 0; x < addrList.length; x++) {
-                ipAddr[x] = parseInt(addrList[x], 2);
+            for (x = 0; x < subnet.length; x += 8) {
+                addrList.push(parseInt(subnet.slice(x, x + 8), 2));
             }
-
-            return ipAddr.join(".");
+            
+            return addrList.join(".");
+        } else {
+            //console.log(subnet);
+            console.log(parseInt(subnet.slice(0, 16), 2).toString(16).toUpperCase());
+            for (x = 0; x < addrList.length; x+=16) {
+                addrList.push(parseInt(subnet.slice(x, x + 16), 2).toString(16).toUpperCase());
+            }
+            
+            return addrList.join(":");
         }
+    }
+
+    // pack subnets into HTML
+    function packSubnets(ipList) {
+        console.log(ipList);
     }
 
     // embed HTML response to user input
@@ -241,11 +274,24 @@ function calculate() {
         
         if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
             var subnets = getSubnets(ipBin, subnetMask, subnetCount);                                   // retrieve binary subnets
-            var ipList = [];
+            var ipList = [];                                                                            // list of IP addr + subnet features
+            var subnetIP;                                                                               // IP of subnet (ip notation)
+            var mask;                                                                                   // IP mask
+            var network;                                                                                // subnet network address
+            var bcast;                                                                                  // subnet broadcast address
+            var hosts;                                                                                  // number of hosts in subnet
+
             for (i = 0; i < subnets.length; i++) {                                                      // create list of {ip, mask}
-                ipList.push({"ip": getIP(subnets[i]["ip"], ipVersion), "mask": subnets[i]["mask"]});
+                subnetIP = getIP(subnets[i]["ip"], ipVersion);                                          // subnet IP translated from binary to standard notation
+                mask = subnets[i]["mask"];                                                              // subnet mask
+                network = getIP(subnets[i]["network"], ipVersion);                                      // network address in subnet
+                bcast = getIP(subnets[i]["bcast"], ipVersion);                                          // broadcast address in subnet
+                hosts = subnets[i]["hosts"];                                                            // number of hosts in subnet
+
+                ipList.push({"ip": subnetIP, "mask": mask, "network": network, "bcast": bcast, "hosts": hosts});
             }
-            console.log(ipList);
+
+            packSubnets(ipList);
         } else {
             console.log("invalid");
         }
@@ -256,8 +302,8 @@ function calculate() {
         // ipv4 version selected
         ipLabel.innerHTML = "IPv4 Address";             // change text to "ipv4 address"
         ipField.style.width = "110px";                  // shrink ip input width
-        ipField.value = "0.0.0.0";                      // clear ipField
-        subnetField.value = "0";                        // clear subnetField
+        ipField.value = "192.168.1.0";                  // clear ipField
+        subnetField.value = "24";                       // clear subnetField
         subnetField.max = "32";                         // set maximum input value
         snLabel.style.marginLeft = "40px";              // shrink label position
     });
@@ -267,8 +313,8 @@ function calculate() {
         // ipv6 version selected
         ipLabel.innerHTML = "IPv6 Address";             // change text to ipv6 address
         ipField.style.width = "250px";                  // extend ip input width
-        ipField.value = "::";                           // clear ipField
-        subnetField.value = "64";                       // clear subnet field
+        ipField.value = "FFFF:FFFF:FFFF::";             // clear ipField
+        subnetField.value = "48";                       // clear subnet field
         subnetField.max = "64";                         // set maximum input value
         snLabel.style.marginLeft = "180px";             // extend label position
     });

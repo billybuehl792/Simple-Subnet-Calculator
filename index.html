@@ -15,6 +15,8 @@
         <h1 class="title">Simple IPv4/ IPv6 Subnet Calculator</h1>
     </div>
     <form name="calculator" id="calculator">
+
+        <!-- User Input Fields -->
         <div class="container">
             <div class="input-container">
                 <fieldset>
@@ -29,20 +31,32 @@
             <div class="input-container">
                 <fieldset>
                     <legend>IP Information</legend>
-                    <label for="ip-address" id="ip-label">IPv4 Address</label>
-                    <label for="subnet-mask" id="sn-label" style="margin-left: 40px;">SN Mask</label><br>
-                    <input name="ip-address" id="ip-address" class="input-field" value="0.0.0.0" style="width: 110px;">
-                    <input name="subnet-mask" id="subnet-mask" class="input-field" type="number" value="0" min="0" max="32"><br>
-                    <small id="error-field"></small>
+                        <label for="ip-address" id="ip-label">IPv4 Address</label>
+                        <label for="subnet-mask" id="sn-label" style="margin-left: 40px;">SN Mask</label><br>
+                        <input name="ip-address" id="ip-address" class="input-field" value="192.168.1.0" style="width: 110px;">
+                        <input name="subnet-mask" id="subnet-mask" class="input-field" type="number" value="24" min="0" max="32"><br>
+                        <small id="error-field"></small>
                 </fieldset>
             </div>
 
             <div class="input-container">
                 <label for="subnet-count">Number of subnets</label>
-                <input name="subnet-count" id="subnet-count">
+                <input name="subnet-count" id="subnet-count" class="input-field" type="number" min="2" max="1000" value="2">
             </div>
 
+            <!-- Calculate Subnets -->
             <div id="calculate">Calculate</div>
+
+            <!-- Subnet Display Field -->
+            <div class="input-container" style="display: none;">
+                <fieldset>
+                    <legend>Subnets</legend>
+                    <div class="subnet">
+
+                    </div>
+                </fieldset>
+            </div>
+
         </div>
     </form>
 

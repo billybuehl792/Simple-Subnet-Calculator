@@ -7,6 +7,7 @@ body {
     background-color: rgb(16, 117, 90);
     width: 100%;
     line-height: 50px;
+    margin-bottom: 15px;
     text-align: center;
     font-weight: 700;
     font-size: 16px;
@@ -21,7 +22,7 @@ body {
     max-width: 450px;
     width: 80%;
     min-width: 340px;
-    margin: 6px;
+    margin: 5px 0px;
     font-size: 12px;
 }
 .input-field {
@@ -39,8 +40,16 @@ body {
     color: white;
     background-color: rgb(60, 60, 60);
 }
+input[type="radio"] {
+    cursor: pointer;
+}
 #subnet-mask {
     width: 40px;
+}
+#subnet-count {
+    height: 20px;
+    width: 40px;
+    margin-top: 0;
 }
 fieldset {
     display: block;
@@ -57,13 +66,19 @@ legend {
     font-size: 13px;
 }
 label {
+    cursor: pointer;
     font-size: 10px;
 }
+label[for="subnet-count"] {
+    padding-left: 15px;
+}
 #calculate {
-    width: 100px;
-    line-height: 30px;
+    width: 150px;
+    line-height: 40px;
+    margin: 10px 0px;
     text-align: center;
-    background-color: grey;
+    border-radius: 10px;
+    background-color: rgb(16, 117, 90);
     cursor: pointer;
 }
 #error-field {
