@@ -7,6 +7,7 @@ function calculate() {
     var versionFields = document.getElementsByName("ip-version");
     var snLabel = document.getElementById("sn-label");
     var subnetCountField = document.getElementById("subnet-count");
+    var subnetItemField = document.getElementById("subnet-items");
     var errorField = document.getElementById("error-field");
 
     // returns selected IP version
@@ -250,8 +251,34 @@ function calculate() {
     }
 
     // pack subnets into HTML
-    function packSubnets(ipList) {
-        console.log(ipList);
+    function packSubnets(ipList, subnetItemField) {
+        var div, ipNode, networkNode, bcastNode, hostsNode, br;
+
+        subnetItemField.innerHTML = "";
+
+        for (i = 0; i < ipList.length; i++) {
+            div = document.createElement("div");
+            subnetNode = document.createElement("h3");
+            networkNode = document.createElement("p");
+            bcastNode = document.createElement("p");
+            hostsNode = document.createElement("p");
+            hr = document.createElement("hr");
+
+            subnetNode.appendChild(document.createTextNode("Subnet: " + ipList[i]["ip"] + " /" + ipList[i]["mask"]));
+            networkNode.appendChild(document.createTextNode("Network Address: " + ipList[i]["network"]));
+            bcastNode.appendChild(document.createTextNode("Broadcast Address: " + ipList[i]["bcast"]));
+            hostsNode.appendChild(document.createTextNode("Maximum Hosts: " + ipList[i]["hosts"]));
+
+            div.appendChild(subnetNode);
+            div.appendChild(networkNode);
+            div.appendChild(bcastNode);
+            div.appendChild(hostsNode);
+            if (i < (ipList.length - 1)) {
+                div.appendChild(hr);
+            }
+
+            subnetItemField.appendChild(div);
+        }
     }
 
     // embed HTML response to user input
@@ -275,11 +302,7 @@ function calculate() {
         if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
             var subnets = getSubnets(ipBin, subnetMask, subnetCount);                                   // retrieve binary subnets
             var ipList = [];                                                                            // list of IP addr + subnet features
-            var subnetIP;                                                                               // IP of subnet (ip notation)
-            var mask;                                                                                   // IP mask
-            var network;                                                                                // subnet network address
-            var bcast;                                                                                  // subnet broadcast address
-            var hosts;                                                                                  // number of hosts in subnet
+            var subnetIP, mask, network, bcast, hosts;                                                  // declare subnet variables
 
             for (i = 0; i < subnets.length; i++) {                                                      // create list of {ip, mask}
                 subnetIP = getIP(subnets[i]["ip"], ipVersion);                                          // subnet IP translated from binary to standard notation
@@ -291,9 +314,7 @@ function calculate() {
                 ipList.push({"ip": subnetIP, "mask": mask, "network": network, "bcast": bcast, "hosts": hosts});
             }
 
-            packSubnets(ipList);
-        } else {
-            console.log("invalid");
+            packSubnets(ipList, subnetItemField);
         }
     });
 
