@@ -250,34 +250,35 @@ function calculate() {
         }
     }
 
-    // pack subnets into HTML
+    // pack subnets into HTML (div: subnetItemField)
     function packSubnets(ipList, subnetItemField) {
-        var div, ipNode, networkNode, bcastNode, hostsNode, br;
+        var div, subnetNode, networkNode, bcastNode, hostsNode, hr;
 
-        subnetItemField.innerHTML = "";
+        subnetItemField.innerHTML = "";                             // reset subnetItemField
 
         for (i = 0; i < ipList.length; i++) {
-            div = document.createElement("div");
-            subnetNode = document.createElement("h3");
-            networkNode = document.createElement("p");
-            bcastNode = document.createElement("p");
-            hostsNode = document.createElement("p");
-            hr = document.createElement("hr");
+            div = document.createElement("div");                    // div nested in subnetItemField
+            subnetNode = document.createElement("h3");              // subnet item
+            networkNode = document.createElement("p");              // network address
+            bcastNode = document.createElement("p");                // broadcast address
+            hostsNode = document.createElement("p");                // max hosts
+            hr = document.createElement("hr");                      // horizontal rule
 
             subnetNode.appendChild(document.createTextNode("Subnet: " + ipList[i]["ip"] + " /" + ipList[i]["mask"]));
             networkNode.appendChild(document.createTextNode("Network Address: " + ipList[i]["network"]));
             bcastNode.appendChild(document.createTextNode("Broadcast Address: " + ipList[i]["bcast"]));
-            hostsNode.appendChild(document.createTextNode("Maximum Hosts: " + ipList[i]["hosts"]));
+            hostsNode.appendChild(document.createTextNode("Maximum Hosts(/" + ipList[i]["mask"] + "): " + ipList[i]["hosts"]));
 
             div.appendChild(subnetNode);
             div.appendChild(networkNode);
             div.appendChild(bcastNode);
             div.appendChild(hostsNode);
-            if (i < (ipList.length - 1)) {
+
+            if (i < (ipList.length - 1)) {                          // don't add hr if last item
                 div.appendChild(hr);
             }
 
-            subnetItemField.appendChild(div);
+            subnetItemField.appendChild(div);                       // append items to div
         }
     }
 
@@ -314,7 +315,7 @@ function calculate() {
                 ipList.push({"ip": subnetIP, "mask": mask, "network": network, "bcast": bcast, "hosts": hosts});
             }
 
-            packSubnets(ipList, subnetItemField);
+            packSubnets(ipList, subnetItemField);                                                       // pack into HTML
         }
     });
 
