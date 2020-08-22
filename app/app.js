@@ -64,7 +64,7 @@ function calculate() {
         // validate SN mask against IP address
         function validateSNMask(ipBin, subnetMask, ipVersion) {
             if (ipVersion == "ipv6") {                                                      // IPv6 subnet validation
-                if (subnetMask < 0 || subnetMask > 64) {
+                if (subnetMask < 0 || subnetMask > 62) {
                     return [false, subnetField, "Minimum IPv6 subnet size: /64"];
                 }
             } else {
@@ -81,8 +81,13 @@ function calculate() {
         }
 
         // validate requested subnet count
-        function validateSubnetCount(ipBin, subnetMask, subnetCount) {
-            var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
+        function validateSubnetCount(ipBin, ipVersion, subnetMask, subnetCount) {
+            if (ipVersion == "ipv4") {
+                var maxSubnets = (2 ** (ipBin.length - subnetMask) / 4);                    // determine max subnets
+            } else {
+                var maxSubnets = (2 ** (ipBin.length - 64 - subnetMask) / 4);               // max subnets given min size /64
+            }
+
             if (subnetCount > 1000) {
                 return [false, subnetCountField, "C'mon, man. That's too many subnets.."];
             } else if (maxSubnets >= subnetCount && subnetCount >= 2) {
@@ -94,7 +99,7 @@ function calculate() {
 
         var validateIP = validateAddressFormat(ip, ipVersion);
         var validateSN = validateSNMask(ipBin, subnetMask, ipVersion);
-        var validateSNC = validateSubnetCount(ipBin, subnetMask, subnetCount);
+        var validateSNC = validateSubnetCount(ipBin, ipVersion, subnetMask, subnetCount);
 
         if (validateIP[0]) {                                                            // validate IP address
             inputMessage(validateIP);
@@ -202,10 +207,7 @@ function calculate() {
         var subnets = [{"ip": ipBin, "mask": Number(subnetMask)}];
         var maxLength = 2;
         var iterator = 0;
-        var splitSN;
-        var networkAddr;
-        var bcast;
-        var hostNum;
+        var splitSN, networkAddr, bcast, hostNum;
 
         // divide until subnetCount reached
         while (subnets.length < subnetCount) {
@@ -240,9 +242,7 @@ function calculate() {
             
             return addrList.join(".");
         } else {
-            //console.log(subnet);
-            console.log(parseInt(subnet.slice(0, 16), 2).toString(16).toUpperCase());
-            for (x = 0; x < addrList.length; x+=16) {
+            for (x = 0; x < subnet.length; x += 16) {
                 addrList.push(parseInt(subnet.slice(x, x + 16), 2).toString(16).toUpperCase());
             }
             
@@ -342,7 +342,32 @@ function calculate() {
     });
 }
 
+function dropNav() {
+    const burger = document.getElementById('burger');
+    const navDrop = document.getElementById('navDrop');
+    const navLink = document.getElementById('nav_links');
+    const navLinks = document.querySelectorAll('.nav_links li');
+
+    burger.addEventListener('click', () => {
+        //drop nav window
+        navDrop.classList.toggle('navDrop_active');
+        
+        //reveal links
+        navLink.classList.toggle('nav_links_active');
+        navLinks.forEach((link, index) => {
+            if (link.style.animation) {
+                link.style.animation = '';
+            } else {
+                link.style.animation = `navLinkFade 0.2s ease forwards ${index /10}s`;
+            }
+        });
+
+        //animate burger
+        burger.classList.toggle('burger_X');
+    });
+}
 
 const app = () => {
     calculate();
+    dropNav();
 }
