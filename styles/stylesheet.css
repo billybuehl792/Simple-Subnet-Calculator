@@ -242,6 +242,13 @@ label[for="subnet-count"] {
     background-color: rgb(218, 121, 121);
 }
 
+
+/* How to subnet */ 
+.text-container {
+    position: absolute;
+    width: 100vw;
+    top: 65px;
+}
 @keyframes navLinkFade {
     from{
         opacity: 0;

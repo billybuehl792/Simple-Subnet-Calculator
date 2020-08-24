@@ -183,7 +183,7 @@ function calculate() {
     }
 
     // returns array of subnet info arrays
-    function getSubnets(ipBin, subnetMask, subnetCount) {
+    function getSubnets(ipBin, subnetMask, subnetCount, ipVersion) {
         // returns array of 2 subnets: [{"ip": "binary", "mask": snmask}, {"ip": "binary", "mask": snmask}]
         function splitBit(subnet) {
             // split ipBin string at subnet mask+1
@@ -207,7 +207,7 @@ function calculate() {
         var subnets = [{"ip": ipBin, "mask": Number(subnetMask)}];
         var maxLength = 2;
         var iterator = 0;
-        var splitSN, networkAddr, bcast, hostNum;
+        var splitSN, networkAddr, bcast, hostNum, mask;
 
         // divide until subnetCount reached
         while (subnets.length < subnetCount) {
@@ -225,9 +225,17 @@ function calculate() {
 
         for (i = 0; i < subnets.length; i++) {
             networkAddr = getNetworkAddr(subnets[i]["ip"]);
-            bcast = getBroadcastAddr(subnets[i]["ip"], subnets[i]["mask"]);
-            hostNum = 2 ** (subnets[i]["ip"].length - subnets[i]["mask"]) - 2;
-            subnets[i] = {"ip": subnets[i]["ip"], "mask": subnets[i]["mask"], "network": networkAddr, "bcast": bcast, "hosts": hostNum};       
+            if (ipVersion == "ipv6") {
+                bcast = "";                                             // no broadcast in ipv6
+                hostNum = 2 ** 64;                                      // 2**64 hosts
+                mask = 64;                                              // always /64 for client networks
+            } else {
+                bcast = getBroadcastAddr(subnets[i]["ip"], subnets[i]["mask"]);
+                hostNum = 2 ** (subnets[i]["ip"].length - subnets[i]["mask"]) - 2;
+                mask = subnets[i]["mask"];
+            }
+
+            subnets[i] = {"ip": subnets[i]["ip"], "mask": mask, "network": networkAddr, "bcast": bcast, "hosts": hostNum};       
         }
         return subnets;
     }
@@ -301,7 +309,7 @@ function calculate() {
         var ipBin = getBinary(ip, ipVersion);
         
         if (validate(ip, ipBin, ipVersion, subnetMask, subnetCount)) {
-            var subnets = getSubnets(ipBin, subnetMask, subnetCount);                                   // retrieve binary subnets
+            var subnets = getSubnets(ipBin, subnetMask, subnetCount, ipVersion);                        // retrieve binary subnets
             var ipList = [];                                                                            // list of IP addr + subnet features
             var subnetIP, mask, network, bcast, hosts;                                                  // declare subnet variables
 
@@ -309,7 +317,12 @@ function calculate() {
                 subnetIP = getIP(subnets[i]["ip"], ipVersion);                                          // subnet IP translated from binary to standard notation
                 mask = subnets[i]["mask"];                                                              // subnet mask
                 network = getIP(subnets[i]["network"], ipVersion);                                      // network address in subnet
-                bcast = getIP(subnets[i]["bcast"], ipVersion);                                          // broadcast address in subnet
+                if (ipVersion == "ipv6") {
+                    bcast = "n/a";
+                } else {
+                    bcast = getIP(subnets[i]["bcast"], ipVersion);                                      // broadcast address in subnet
+                }
+
                 hosts = subnets[i]["hosts"];                                                            // number of hosts in subnet
 
                 ipList.push({"ip": subnetIP, "mask": mask, "network": network, "bcast": bcast, "hosts": hosts});
@@ -322,7 +335,8 @@ function calculate() {
     // select IPv4
     versionFields[0].addEventListener("click", () => {
         // ipv4 version selected
-        ipLabel.innerHTML = "IPv4 Address";             // change text to "ipv4 address"
+        ipLabel.innerHTML = "IPv4 Network";             // change text to "ipv4 address"
+        subnetItemField.innerHTML = "";                 // reset subnetItemField
         ipField.style.width = "110px";                  // shrink ip input width
         ipField.value = "192.168.1.0";                  // clear ipField
         subnetField.value = "24";                       // clear subnetField
@@ -333,7 +347,8 @@ function calculate() {
     // select IPv6
     versionFields[1].addEventListener("click", () => {
         // ipv6 version selected
-        ipLabel.innerHTML = "IPv6 Address";             // change text to ipv6 address
+        ipLabel.innerHTML = "IPv6 Network";             // change text to ipv6 address
+        subnetItemField.innerHTML = "";                 // reset subnetItemField
         ipField.style.width = "250px";                  // extend ip input width
         ipField.value = "FFFF:FFFF:FFFF::";             // clear ipField
         subnetField.value = "48";                       // clear subnet field
@@ -365,9 +380,4 @@ function dropNav() {
         //animate burger
         burger.classList.toggle('burger_X');
     });
-}
-
-const app = () => {
-    calculate();
-    dropNav();
 }
