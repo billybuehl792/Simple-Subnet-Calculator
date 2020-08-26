@@ -349,12 +349,46 @@ function calculate() {
         // ipv6 version selected
         ipLabel.innerHTML = "IPv6 Network";             // change text to ipv6 address
         subnetItemField.innerHTML = "";                 // reset subnetItemField
-        ipField.style.width = "250px";                  // extend ip input width
-        ipField.value = "FFFF:FFFF:FFFF::";             // clear ipField
+        ipField.style.width = "200px";                  // extend ip input width
+        ipField.value = "::";                           // clear ipField
         subnetField.value = "48";                       // clear subnet field
         subnetField.max = "64";                         // set maximum input value
-        snLabel.style.marginLeft = "180px";             // extend label position
+        snLabel.style.marginLeft = "130px";             // extend label position
     });
+}
+
+function baseConvert() {
+
+    // dec to bin
+    function dec2bin(num) {
+
+    }
+
+    // dec to hex
+    function dec2hex(num) {
+
+    }
+
+    // bin to dec
+    function bin2dec(binString) {
+
+    }
+
+    // bin to hex
+    function bin2hex(binString) {
+
+    }
+
+    // hex to dec
+    function hex2dec(hexString) {
+
+    }
+
+    function hex2bin(hexString) {
+
+    }
+
+
 }
 
 function dropNav() {

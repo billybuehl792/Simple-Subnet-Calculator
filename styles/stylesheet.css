@@ -15,6 +15,7 @@ nav {
     justify-content: space-around;
     align-items: center;
     background-color: rgb(16, 117, 90);
+    box-shadow: 0px 3px 2px rgba(32, 33, 35, .3);
     height: 60px;
     width: 100%;
     z-index: 3;
@@ -67,7 +68,7 @@ nav {
     right: 0;
     position: fixed;
     top: 60px;
-    height: 100px;
+    height: 150px;
     width: 200px;
     transform: translateY(-105%);
     transition: .2s ease-in-out;
@@ -75,7 +76,7 @@ nav {
 }
 .navDrop_active {
     transform: translateY(0%);
-    background-color: rgba(57, 167, 138, .97);
+    background-color: rgba(46, 145, 118, 0.97);
     transition: .2s ease-in-out;
 }
 .nav_links {
@@ -96,7 +97,7 @@ nav {
     width: 200px;
     top: 60px;
     text-align: center;
-    height: 100px;
+    height: 150px;
     z-index: 2;
 }
 .nav-item-active {
@@ -141,6 +142,8 @@ nav {
 .nav-item-active a:hover {
     transition: .2s ease;
 }
+
+/* Subnet Calc */
 .container {
     position: absolute;
     top: 65px;
@@ -153,7 +156,7 @@ nav {
 .input-container {
     max-width: 450px;
     width: 80%;
-    min-width: 340px;
+    min-width: 300px;
     margin: 5px 0px;
     font-size: 12px;
 }
@@ -245,10 +248,142 @@ label[for="subnet-count"] {
 
 /* How to subnet */ 
 .text-container {
-    position: absolute;
-    width: 100vw;
-    top: 65px;
+    max-width: 650px;
+    width: 80%;
+    min-width: 340px;
+    margin: 5px 0px;
+    font-size: 12px;
 }
+.text-container h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.text-container h2 {
+    font-size: 17px;
+    font-weight: 400;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+.text-container h3 {
+    font-size: 13px;
+    font-weight: 400;
+    margin-left: 20px;
+    margin-bottom: 3px;
+}
+.text-container p {
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 15px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+.text-container a {
+    color: rgb(38, 148, 119);
+    text-decoration: none;
+}
+.text-container table {
+    margin: 20px auto;
+}
+.text-container li {
+    margin-left: 60px;
+    font-weight: 300;
+}
+.text-container table, th, td {
+    font-size: 10px;
+    border: 1px solid white;
+    padding: 5px 10px;
+    text-align: center;
+}
+.table-break {
+    padding: 1px;
+}
+sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+sup {
+    top: -0.5em;
+}
+sub {
+    bottom: -0.25em;
+}
+.net {
+    color: rgb(160, 160, 160);
+}
+.netBG {
+    background-color: rgb(52, 52, 52);
+}
+
+/* Convert to base */
+#convertFrom {
+    float: left;
+    margin-left: 20%;
+}
+#convertTo {
+    float: right;
+    margin-right: 15%;
+}
+.field-header {
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-decoration: underline;
+}
+#numeric-value {
+    height: 20px;
+    width: 150px;
+    margin-top: 0;
+}
+label[for="numeric-value"] {
+    padding-left: 15px;
+}
+#output {
+    margin: 15px 0px;
+    font-size: 11px;
+}
+
+/* Media Queries */
+@media screen and (max-width: 500px){
+    .logo {
+        font-size: 11px;
+    }
+    .text-container {
+        max-width: 650px;
+        width: 80%;
+        min-width: 50px;
+        margin: 5px 0px;
+    }
+    .text-container h1 {
+        font-size: 17px;
+    }
+    .text-container h2 {
+        font-size: 13px;
+    }
+    .text-container h3 {
+        font-size: 12px;
+    }
+    .text-container p {
+        font-size: 11px;
+    }
+    .text-container table, th, td {
+        font-size: 8px;
+        padding: 4px;
+    } 
+    .text-container ol li {
+        font-size: 11px;
+    }
+    #convertFrom {
+        float: left;
+        margin-left: 10px;
+    }
+    #convertTo {
+        float: right;
+        margin-right: 10px;
+    }
+}
+
 @keyframes navLinkFade {
     from{
         opacity: 0;
