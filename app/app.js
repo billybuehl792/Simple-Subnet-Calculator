@@ -362,22 +362,27 @@ function baseConvert() {
     var convertToFields = document.getElementsByName("convert-to");
     var inputLabel = document.getElementById("numeric-type-label");
     var userInput = document.getElementById("numeric-value");
+    var outputField = document.getElementById("output");
     var errorField = document.getElementById("error-field");
     var convertFrom = 10;
     var convertTo = 2;
     var convert = document.getElementById("convert");
 
+    // validate user input
     function validate(convertFrom, userInput) {
         var symbolSpace = ["0", "1"];
         var value = userInput.value.toUpperCase();
 
+        if (value.length < 1) {
+            return [false, userInput, "Enter input"];
+        }
         if (convertFrom == 16) {
             symbolSpace = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
             if (value.length > 15) {
                 return [false, userInput, "Input too large"];
             }
         } else if (convertFrom == 10) {
-            symbolSpace = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+            symbolSpace = ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
             if (value.length > 20) {
                 return [false, userInput, "Input too large"];
             }
@@ -395,18 +400,29 @@ function baseConvert() {
         return [true, userInput, ""];
     }
 
+    // convert number to base
+    function converter(n, fromBase, toBase) {
+        if (fromBase === void 0) {
+          fromBase = 10;
+        }
+        if (toBase === void 0) {
+          toBase = 10;
+        }
+        return parseInt(n.toString(), fromBase).toString(toBase).toUpperCase();
+    }
+
     // convert
     convert.addEventListener("click", () => {
         var valid = validate(convertFrom, userInput);
+        var value = userInput.value;
 
-        if (valid[0]) {
-            // valid input
-            valid[1].classList.remove("error");
-            errorField.innerHTML = valid[2];
-        } else {
-            // erroneos input
-            valid[1].classList.add("error");
-            errorField.innerHTML = valid[2];
+        if (valid[0]) {                                                         // valid input
+            valid[1].classList.remove("error");                                 // remove error class
+            errorField.innerHTML = valid[2];                                    // clear error field
+            outputField.innerHTML = converter(value, convertFrom, convertTo);   // output to document
+        } else {                                                                // erroneous input
+            valid[1].classList.add("error");                                    // add error "red" class
+            errorField.innerHTML = valid[2];                                    // add error message
         }
     });
 
