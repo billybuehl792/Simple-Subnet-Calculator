@@ -223,7 +223,7 @@ label {
 label[for="subnet-count"] {
     padding-left: 15px;
 }
-#calculate {
+.calculate {
     width: 150px;
     line-height: 40px;
     margin: 15px 0px;
@@ -233,7 +233,7 @@ label[for="subnet-count"] {
     transition: .1s ease;
     cursor: pointer;
 }
-#calculate:hover {
+.calculate:hover {
     background-color: rgb(57, 167, 138);
     transition: .1s ease;
 }
@@ -339,9 +339,12 @@ sub {
 label[for="numeric-value"] {
     padding-left: 15px;
 }
+.output-section {
+    margin: 0;
+}
 #output {
-    margin: 15px 0px;
-    font-size: 11px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 /* Media Queries */

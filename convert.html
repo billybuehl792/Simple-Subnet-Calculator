@@ -58,21 +58,25 @@
             </div>
 
             <div class="input-container">
-                <label for="numeric-value">Decimal Value</label>
+                <label for="numeric-value" id="numeric-type-label">Decimal Value</label>
                 <input name="numeric-value" id="numeric-value" class="input-field" value="10">
+                <small id="error-field"></small>
             </div>
 
             <div class="output-container" id="val-convert">
-                <p id="output">1010</p>
+                <div class="output-section">
+                    <p id="output">1010</p>
+                </div>
             </div>
 
-            <div id="calculate">Calculate</div>
+            <div id="convert" class="calculate">Convert</div>
         </div>
     </form>
 
     <script type='text/javascript' src='app/app.js'></script>
     <script>
         dropNav();
+        baseConvert();
     </script>
 </body>
 </html>

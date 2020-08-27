@@ -358,37 +358,90 @@ function calculate() {
 }
 
 function baseConvert() {
+    var convertFromFields = document.getElementsByName("convert-from");
+    var convertToFields = document.getElementsByName("convert-to");
+    var inputLabel = document.getElementById("numeric-type-label");
+    var userInput = document.getElementById("numeric-value");
+    var errorField = document.getElementById("error-field");
+    var convertFrom = 10;
+    var convertTo = 2;
+    var convert = document.getElementById("convert");
 
-    // dec to bin
-    function dec2bin(num) {
+    function validate(convertFrom, userInput) {
+        var symbolSpace = ["0", "1"];
+        var value = userInput.value.toUpperCase();
 
+        if (convertFrom == 16) {
+            symbolSpace = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+            if (value.length > 15) {
+                return [false, userInput, "Input too large"];
+            }
+        } else if (convertFrom == 10) {
+            symbolSpace = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+            if (value.length > 20) {
+                return [false, userInput, "Input too large"];
+            }
+        } else {
+            if (value.length > 100) {
+                return [false, userInput, "Input too large"];
+            }
+        }
+        
+        for (i=0; i < value.length; i++) {
+            if (!(symbolSpace.includes(value[i]))) {
+                return [false, userInput, "Use symbols in base-" + convertFrom];
+            }
+        }
+        return [true, userInput, ""];
     }
 
-    // dec to hex
-    function dec2hex(num) {
+    // convert
+    convert.addEventListener("click", () => {
+        var valid = validate(convertFrom, userInput);
 
-    }
+        if (valid[0]) {
+            // valid input
+            valid[1].classList.remove("error");
+            errorField.innerHTML = valid[2];
+        } else {
+            // erroneos input
+            valid[1].classList.add("error");
+            errorField.innerHTML = valid[2];
+        }
+    });
 
-    // bin to dec
-    function bin2dec(binString) {
+    // convert from decimal
+    convertFromFields[0].addEventListener("click", () => {
+        inputLabel.innerHTML = "Decimal Value";
+        convertFrom = 10;
+    });
 
-    }
+    // convert from binary
+    convertFromFields[1].addEventListener("click", () => {
+        inputLabel.innerHTML = "Binary String";
+        convertFrom = 2;
+    });
 
-    // bin to hex
-    function bin2hex(binString) {
+    // convert from hex
+    convertFromFields[2].addEventListener("click", () => {
+        inputLabel.innerHTML = "Hexadecimal String";
+        convertFrom = 16;
+    });
 
-    }
+    // convert to decimal
+    convertToFields[0].addEventListener("click", () => {
+        convertTo = 10;
+    });
 
-    // hex to dec
-    function hex2dec(hexString) {
+    // convert to binary
+    convertToFields[1].addEventListener("click", () => {
+        convertTo = 2;
+    });
 
-    }
-
-    function hex2bin(hexString) {
-
-    }
-
-
+    // convert to hex
+    convertToFields[2].addEventListener("click", () => {
+        convertTo = 16;
+    });
 }
 
 function dropNav() {
