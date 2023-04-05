@@ -68,7 +68,7 @@ nav {
     right: 0;
     position: fixed;
     top: 60px;
-    height: 150px;
+    height: 200px;
     width: 200px;
     transform: translateY(-105%);
     transition: .2s ease-in-out;
@@ -97,7 +97,6 @@ nav {
     width: 200px;
     top: 60px;
     text-align: center;
-    height: 150px;
     z-index: 2;
 }
 .nav-item-active {
